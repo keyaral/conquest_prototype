@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  
   has_many :activities
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -9,6 +8,9 @@ class User < ApplicationRecord
   enum role: [:user, :admin]
   after_initialize :set_default_role, :if => :new_record?
 
+  def assigned_activities
+    Activity.where(assignee_id: self.id)
+  end
   def set_default_role
     self.role ||= :user
   end

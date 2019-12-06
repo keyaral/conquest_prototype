@@ -1,0 +1,11 @@
+<% if @activity.assignee_id == current_user.id %>
+  <p> Activity is assigned to you</p>
+    <% if @activity.completed  %>
+      <p> Activity is completed</p>
+    <% else %>
+      <p> <%= link_to 'Mark as completed', complete_activity_path(@activity) %> </p>
+    <% end%>
+  <% else %>
+  <p>Activity is not assigned</p>
+  <p> <%= link_to 'Assign to you', assign_activity_path(@activity) %> </p>
+<% end %>

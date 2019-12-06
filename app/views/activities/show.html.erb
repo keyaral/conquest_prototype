@@ -13,9 +13,10 @@
   <strong>Score value:</strong>
   <%= @activity.score_value %>
 </p>
- 
+
+<%= render 'assignment_actions' %>
 
 <%= link_to 'Back', activities_path %>
 <% if current_user.admin? %>
-  <% link_to 'Edit', edit_activity_path(@activity) %> |
+  <% link_to 'Edit', edit_activity_path(@activity) %>
 <% end %>
