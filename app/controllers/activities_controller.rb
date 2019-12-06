@@ -1,9 +1,32 @@
 class ActivitiesController < ApplicationController
-  before_action :set_activity, only: [:show, :edit, :update, :destroy]
-  before_action :is_admin?, except: [:index]
-  
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :assign, :complete]
+  before_action :must_be_admin, only: [:new, :create, :edit, :update ]
+
+
+  def assign
+    @activity.assignee_id = current_user.id
+    @activity.save
+    redirect_to @activity, notice: 'Activity was successfully assigned.'
+  end
+
+  def complete
+    if current_user != @activity.user
+      return redirect_back fallback_location: { action: "index" }, notice: 'This activity is not assigned to you'
+    end
+    @activity.update!(completed: true)
+    redirect_to @activity, notice: 'Activity was successfully completed.'
+  end
+
   def index
-    @activities = Activity.all
+      @activities = Activity.where(completed: false)
+      @completed_activities = Activity.where(completed: true)
+  end
+
+  def user_assigned
+    user_activities = current_user.assigned_activities
+    @activities = user_activities.reject{ |x| x.completed }
+    @completed_activities =  user_activities.select{ |x| x.completed }
+    render :user_index
   end
 
   def show
@@ -11,7 +34,6 @@ class ActivitiesController < ApplicationController
 
   # GET /activities/new
   def new
-    
     @activity = Activity.new
   end
 
@@ -21,7 +43,7 @@ class ActivitiesController < ApplicationController
 
   def create
     @activity = Activity.new(activity_params)
-
+    @activity.user = current_user
     respond_to do |format|
       if @activity.save
         format.html { redirect_to @activity, notice: 'Activity was successfully created.' }
@@ -63,7 +85,7 @@ class ActivitiesController < ApplicationController
       params.require(:activity).permit(:name, :description, :score_value)
     end
 
-    def is_admin?
+    def must_be_admin
       if current_user.user?
         return redirect_to activities_path, notice: 'You are not authorised to perform that task'
       end
