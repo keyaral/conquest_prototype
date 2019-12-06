@@ -1,5 +1,4 @@
-<p id="notice"><%= notice %></p>
-
+<h4> Activity Status </h4>
 <p>
   <strong>Name:</strong>
   <%= @activity.name %>
@@ -14,6 +13,9 @@
   <strong>Score value:</strong>
   <%= @activity.score_value %>
 </p>
+ 
 
-<%= link_to 'Edit', edit_activity_path(@activity) %> |
 <%= link_to 'Back', activities_path %>
+<% if current_user.admin? %>
+  <% link_to 'Edit', edit_activity_path(@activity) %> |
+<% end %>
