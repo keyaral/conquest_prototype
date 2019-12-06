@@ -11,6 +11,11 @@ class User < ApplicationRecord
   def assigned_activities
     Activity.where(assignee_id: self.id)
   end
+  
+  def total_score
+    assigned_activities.sum(:score_value)
+  end
+  
   def set_default_role
     self.role ||= :user
   end
